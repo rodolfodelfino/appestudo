@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano de Estudos INSS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #2C3E50;
+        }
+        table {
+            margin-bottom: 20px;
+            border-collapse: collapse;
+            width: 80%;
+            max-width: 600px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #2C3E50;
+            color: white;
+        }
+        #study-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        .study-button {
+            background-color: #E67E22;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .study-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #timer {
+            margin: 10px 0;
+            font-size: 24px;
+            color: #2C3E50;
+        }
+        #timer.finished {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Plano de Estudos INSS</h1>
+    
+    <!-- Tabela do cronograma de estudos -->
+    <table>
+        <thead>
+            <tr>
+                <th>Dia da Semana</th>
+                <th>Matérias</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Segunda-feira</td><td>Direito Previdenciário (25 min), Informática (25 min), Direito Previdenciário (25 min), Questões Informática (25 min)</td></tr>
+            <tr><td>Terça-feira</td><td>Direito Previdenciário (50 min), Direito Constitucional (25 min), Direito Administrativo (25 min)</td></tr>
+            <tr><td>Quarta-feira</td><td>Direito Previdenciário (50 min), Raciocínio Lógico (25 min), Questões Raciocínio (25 min)</td></tr>
+            <tr><td>Quinta-feira</td><td>Direito Previdenciário (50 min), Português (25 min), Questões Português (25 min)</td></tr>
+            <tr><td>Sexta-feira</td><td>Revisão geral (2 horas)</td></tr>
+            <tr><td>Sábado</td><td>Revisão de questões (2 horas)</td></tr>
+        </tbody>
+    </table>
+    
+    <!-- Seção de seleção de estudo -->
+    <div id="study-section">
+        <label for="day-select">Escolha o dia da semana:</label>
+        <select id="day-select">
+            <option value="Segunda-feira">Segunda-feira</option>
+            <option value="Terça-feira">Terça-feira</option>
+            <option value="Quarta-feira">Quarta-feira</option>
+            <option value="Quinta-feira">Quinta-feira</option>
+            <option value="Sexta-feira">Sexta-feira</option>
+            <option value="Sábado">Sábado</option>
+        </select>
+
+        <p id="day-subject">Matéria:</p>
+        <button id="start-button" class="study-button">Iniciar Estudo</button>
+        <div id="timer">25:00</div>
+        <button id="next-button" class="study-button" disabled>Próxima Matéria</button>
+    </div>
+
+    <script>
+        // Tabela de matérias por dia
+        const schedule = {
+            "Segunda-feira": ["Direito Previdenciário (25 min)", "Informática (25 min)", "Direito Previdenciário (25 min)", "Questões Informática (25 min)"],
+            "Terça-feira": ["Direito Previdenciário (50 min)", "Direito Constitucional (25 min)", "Direito Administrativo (25 min)"],
+            "Quarta-feira": ["Direito Previdenciário (50 min)", "Raciocínio Lógico (25 min)", "Questões Raciocínio (25 min)"],
+            "Quinta-feira": ["Direito Previdenciário (50 min)", "Português (25 min)", "Questões Português (25 min)"],
+            "Sexta-feira": ["Revisão geral (2 horas)"],
+            "Sábado": ["Revisão de questões (2 horas)"]
+        };
+
+        let subjectIndex = 0;
+        let timerInterval;
+
+        // Atualiza as matérias quando o usuário escolhe um dia da semana
+        function updateSubjects() {
+            const selectedDay = document.getElementById('day-select').value;
+            const subjects = schedule[selectedDay];
+            subjectIndex = 0;
+            if (subjects) {
+                document.getElementById("day-subject").textContent = `Matéria: ${subjects[subjectIndex]}`;
+                document.getElementById('start-button').disabled = false;
+                document.getElementById('next-button').disabled = true;
+            }
+        }
+
+        // Função para iniciar o cronômetro
+        function startTimer(duration) {
+            let timer = duration;
+            const display = document.getElementById('timer');
+            display.classList.remove('finished');
+            display.textContent = formatTime(timer);
+
+            timerInterval = setInterval(() => {
+                timer--;
+                display.textContent = formatTime(timer);
+
+                if (timer <= 0) {
+                    clearInterval(timerInterval);
+                    display.classList.add('finished');
+                    playSound();
+                    document.getElementById('next-button').disabled = false;
+                }
+            }, 1000);
+        }
+
+        // Formatação do tempo
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secondsLeft = seconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
+        }
+
+        // Som para o alerta de fim
+        function playSound() {
+            const audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
+            audio.play();
+        }
+
+        // Botão de iniciar estudo
+        document.getElementById('start-button').onclick = () => {
+            document.getElementById('start-button').disabled = true;
+            document.getElementById('next-button').disabled = true;
+            const selectedDay = document.getElementById('day-select').value;
+            const subjects = schedule[selectedDay];
+            const subject = subjects[subjectIndex];
+
+            let duration = subject.includes("50 min") ? 3000 : 1500; // 50 min (3000s) ou 25 min (1500s)
+            startTimer(duration);
+        };
+
+        // Botão de próxima matéria
+        document.getElementById('next-button').onclick = () => {
+            clearInterval(timerInterval);
+            subjectIndex++;
+            const selectedDay = document.getElementById('day-select').value;
+            const subjects = schedule[selectedDay];
+            if (subjectIndex < subjects.length) {
+                document.getElementById('day-subject').textContent = `Matéria: ${subjects[subjectIndex]}`;
+                document.getElementById('timer').textContent = "25:00";
+                document.getElementById('timer').classList.remove('finished');
+                document.getElementById('start-button').disabled = false;
+                document.getElementById('next-button').disabled = true;
+            } else {
+                document.getElementById("day-subject").textContent = "Estudo completo para o dia!";
+                document.getElementById('timer').textContent = "";
+                document.getElementById('start-button').disabled = true;
+            }
+        };
+
+        // Atualiza as matérias ao selecionar o dia
+        document.getElementById('day-select').addEventListener('change', updateSubjects);
+        
+        // Carrega as matérias do dia selecionado inicialmente
+        updateSubjects();
+    </script>
+</body>
+</html>

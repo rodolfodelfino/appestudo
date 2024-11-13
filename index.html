@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tela de Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #login-section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+        h2 {
+            color: #2C3E50;
+            margin-bottom: 20px;
+        }
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .login-button {
+            width: 100%;
+            background-color: #E67E22;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #login-error {
+            color: red;
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Seção de Login -->
+    <div id="login-section">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Usuário" class="input-field">
+        <input type="password" id="password" placeholder="Senha" class="input-field">
+        <button id="login-button" class="login-button">Entrar</button>
+        <p id="login-error">Usuário ou senha incorretos!</p>
+    </div>
+
+    <script>
+        // Dados de login
+        const validUsername = "usuario";  // Substitua pelo nome de usuário desejado
+        const validPassword = "senha123"; // Substitua pela senha desejada
+        const redirectURL = "estudo.html"; // Nome do arquivo da página de destino na mesma pasta
+
+        // Verifica o login
+        document.getElementById("login-button").onclick = function () {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            if (username === validUsername && password === validPassword) {
+                window.location.href = redirectURL; // Redireciona para "estudo.html"
+            } else {
+                document.getElementById("login-error").style.display = "block"; // Exibe mensagem de erro
+            }
+        };
+    </script>
+</body>
+</html>
