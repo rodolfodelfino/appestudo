@@ -96,11 +96,13 @@
             <option value="Sexta-feira">Sexta-feira</option>
             <option value="Sábado">Sábado</option>
         </select>
+
         <p id="day-subject">Matéria:</p>
         <button id="start-button" class="study-button">Iniciar Estudo</button>
         <div id="timer">25:00</div>
         <button id="next-button" class="study-button" disabled>Próxima Matéria</button>
     </div>
+
     <script>
         // Tabela de matérias por dia
         const schedule = {
@@ -111,8 +113,10 @@
             "Sexta-feira": ["Revisão geral (2 horas)"],
             "Sábado": ["Revisão de questões (2 horas)"]
         };
+
         let subjectIndex = 0;
         let timerInterval;
+
         // Atualiza as matérias quando o usuário escolhe um dia da semana
         function updateSubjects() {
             const selectedDay = document.getElementById('day-select').value;
@@ -124,15 +128,18 @@
                 document.getElementById('next-button').disabled = true;
             }
         }
+
         // Função para iniciar o cronômetro
         function startTimer(duration) {
             let timer = duration;
             const display = document.getElementById('timer');
             display.classList.remove('finished');
             display.textContent = formatTime(timer);
+
             timerInterval = setInterval(() => {
                 timer--;
                 display.textContent = formatTime(timer);
+
                 if (timer <= 0) {
                     clearInterval(timerInterval);
                     display.classList.add('finished');
@@ -141,17 +148,20 @@
                 }
             }, 1000);
         }
+
         // Formatação do tempo
         function formatTime(seconds) {
             const minutes = Math.floor(seconds / 60);
             const secondsLeft = seconds % 60;
             return `${String(minutes).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
         }
+
         // Som para o alerta de fim
         function playSound() {
             const audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
             audio.play();
         }
+
         // Botão de iniciar estudo
         document.getElementById('start-button').onclick = () => {
             document.getElementById('start-button').disabled = true;
@@ -159,9 +169,11 @@
             const selectedDay = document.getElementById('day-select').value;
             const subjects = schedule[selectedDay];
             const subject = subjects[subjectIndex];
+
             let duration = subject.includes("50 min") ? 3000 : 1500; // 50 min (3000s) ou 25 min (1500s)
             startTimer(duration);
         };
+
         // Botão de próxima matéria
         document.getElementById('next-button').onclick = () => {
             clearInterval(timerInterval);
@@ -180,6 +192,7 @@
                 document.getElementById('start-button').disabled = true;
             }
         };
+
         // Atualiza as matérias ao selecionar o dia
         document.getElementById('day-select').addEventListener('change', updateSubjects);
         
