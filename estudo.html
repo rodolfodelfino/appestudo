@@ -100,7 +100,6 @@
         <p id="day-subject">Matéria:</p>
         <button id="start-button" class="study-button">Iniciar Estudo</button>
         <div id="timer">25:00</div>
-        <button id="next-button" class="study-button" disabled>Próxima Matéria</button>
     </div>
 
     <script>
@@ -116,8 +115,10 @@
 
         let subjectIndex = 0;
         let timerInterval;
+        let remainingTime = 0;  
+        let isTimerRunning = false;
 
-        // Atualiza as matérias quando o usuário escolhe um dia da semana
+        // Função para atualizar a matéria
         function updateSubjects() {
             const selectedDay = document.getElementById('day-select').value;
             const subjects = schedule[selectedDay];
@@ -125,28 +126,49 @@
             if (subjects) {
                 document.getElementById("day-subject").textContent = `Matéria: ${subjects[subjectIndex]}`;
                 document.getElementById('start-button').disabled = false;
-                document.getElementById('next-button').disabled = true;
             }
         }
 
         // Função para iniciar o cronômetro
         function startTimer(duration) {
-            let timer = duration;
+            remainingTime = duration;
             const display = document.getElementById('timer');
             display.classList.remove('finished');
-            display.textContent = formatTime(timer);
+            display.textContent = formatTime(remainingTime);
+
+            isTimerRunning = true;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
 
             timerInterval = setInterval(() => {
-                timer--;
-                display.textContent = formatTime(timer);
+                remainingTime--;
+                display.textContent = formatTime(remainingTime);
 
-                if (timer <= 0) {
+                if (remainingTime <= 0) {
                     clearInterval(timerInterval);
                     display.classList.add('finished');
                     playSound();
-                    document.getElementById('next-button').disabled = false;
+                    isTimerRunning = false;
+                    document.getElementById('start-button').disabled = false; // Habilita o botão para iniciar manualmente a próxima matéria
+                    alert("Tempo para essa matéria terminou. Pressione 'Iniciar Estudo' para iniciar a próxima matéria.");
                 }
             }, 1000);
+        }
+
+        // Função para avançar para a próxima matéria
+        function goToNextSubject() {
+            const selectedDay = document.getElementById('day-select').value;
+            const subjects = schedule[selectedDay];
+            subjectIndex++;
+            if (subjectIndex < subjects.length) {
+                document.getElementById("day-subject").textContent = `Matéria: ${subjects[subjectIndex]}`;
+                document.getElementById('start-button').disabled = false; // Habilita o botão para o usuário iniciar manualmente o próximo cronômetro
+                document.getElementById('timer').textContent = subjects[subjectIndex].includes("50 min") ? "50:00" : "25:00"; // Reseta o timer na tela para o tempo correto
+            } else {
+                alert("Você concluiu todos os estudos do dia!");
+                document.getElementById('start-button').disabled = false;
+            }
         }
 
         // Formatação do tempo
@@ -165,38 +187,17 @@
         // Botão de iniciar estudo
         document.getElementById('start-button').onclick = () => {
             document.getElementById('start-button').disabled = true;
-            document.getElementById('next-button').disabled = true;
             const selectedDay = document.getElementById('day-select').value;
             const subjects = schedule[selectedDay];
             const subject = subjects[subjectIndex];
-
             let duration = subject.includes("50 min") ? 3000 : 1500; // 50 min (3000s) ou 25 min (1500s)
             startTimer(duration);
         };
 
-        // Botão de próxima matéria
-        document.getElementById('next-button').onclick = () => {
-            clearInterval(timerInterval);
-            subjectIndex++;
-            const selectedDay = document.getElementById('day-select').value;
-            const subjects = schedule[selectedDay];
-            if (subjectIndex < subjects.length) {
-                document.getElementById('day-subject').textContent = `Matéria: ${subjects[subjectIndex]}`;
-                document.getElementById('timer').textContent = "25:00";
-                document.getElementById('timer').classList.remove('finished');
-                document.getElementById('start-button').disabled = false;
-                document.getElementById('next-button').disabled = true;
-            } else {
-                document.getElementById("day-subject").textContent = "Estudo completo para o dia!";
-                document.getElementById('timer').textContent = "";
-                document.getElementById('start-button').disabled = true;
-            }
-        };
-
-        // Atualiza as matérias ao selecionar o dia
+        // Atualiza as matérias quando o dia é alterado
         document.getElementById('day-select').addEventListener('change', updateSubjects);
-        
-        // Carrega as matérias do dia selecionado inicialmente
+
+        // Inicializa o cronograma para o dia atual
         updateSubjects();
     </script>
 </body>
